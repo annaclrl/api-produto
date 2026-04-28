@@ -1,24 +1,6 @@
 version: '3.8'
 
 services:
-  api-produto:
-    build:
-      context: ./
-      dockerfile: Dockerfile
-    container_name: api-produto
-    restart: always
-    environment:
-      MYSQL_HOST: mysql
-      MYSQL_PORT: 3306
-      MYSQL_USER: rm561928
-      MYSQL_PASSWORD: root
-    ports:
-      - "8080:8080"
-    depends_on:
-      - mysql
-    networks:
-      - api-produto-network
-
   mysql:
     image: mysql:8.0
     container_name: mysql
@@ -36,6 +18,30 @@ services:
     networks:
       - api-produto-network
     command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api-produto:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api-produto
+    restart: always
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_USER: rm561928
+      MYSQL_PASSWORD: root
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - api-produto-network
 
 networks:
   api-produto-network:
