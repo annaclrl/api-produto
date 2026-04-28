@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  api-produto:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: api-produto
+    restart: always
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_USER: rm561928
+      MYSQL_PASSWORD: root
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+    networks:
+      - api-produto-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: meubanco
+      MYSQL_USER: rm561928
+      MYSQL_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - database-volume:/var/lib/mysql
+    networks:
+      - api-produto-network
+
+networks:
+  api-produto-network:
+
+volumes:
+  database-volume:
