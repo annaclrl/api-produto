@@ -1,0 +1,11 @@
+1- criar network
+docker network create <nome-network>
+
+2- subir container banco de dados
+docker run -d --name mysql-container --network <nome-network> -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=meubanco -e MYSQL_USER=mysql -e MYSQL_PASSWORD=rm561928 -p 3306:3306 mysql:8
+
+3- fazer build da imagem da app
+docker build -t <nome:tag> . 
+
+3- subir container app
+docker run -d --name <nome> --network <nome-network> -e MYSQL_HOST=mysql-container -e MYSQL_PORT=3306 -e MYSQL_USER=mysql -e MYSQL_PASSWORD=rm561928 -p 8080:8080 <nome:tag>
